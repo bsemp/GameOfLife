@@ -6,10 +6,93 @@
         </style>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
     </head>
-    <body></body>
+    <body>
+    <div>
+        <canvas id="game_of_life"></canvas>
+    </div>
+    <div id="controller_div">
+        <div>
+            <label for="canvassize_slider">canvas size</label>
+            <input type="range" id="canvassize_slider" min="100" max="800" step="10" value="400">
+            <span id="canvassize_slider_value"></span>
+        </div>
+        <div>
+            <label for="cellsize_slider">cell size</label>
+            <input type="range" id="cellsize_slider" min="1" max="20" step="1" value="5">
+            <span id="cellsize_slider_value"></span>
+        </div>
+        <div>
+            <label for="framerate_slider">framerate</label>
+            <input type="range" id="framerate_slider" min="1" max="60" step="1" value="10">
+            <span id="framerate_slider_value"></span>
+        </div>
+    </div>
+    
     <script type="module">
         import {Game} from "./js/game.js";
-        let game = new Game(600, 600, 10);
-        game.start(10);
+        let game;
+        let canvas = document.querySelector("#game_of_life");
+        
+        // Manage Canvas size
+        let canvassize_slider = document.querySelector("#canvassize_slider");
+        let canvassize_slider_value = document.querySelector("#canvassize_slider_value");
+        canvassize_slider_value.textContent = canvassize_slider.value;
+        canvassize_slider.addEventListener("input", (event) => {
+            canvassize_slider_value.textContent = canvassize_slider.value;
+            if (isGameRunning()) {
+                restartGame();
+            }
+        }, false); 
+        
+        // Manage Cell size
+        let cellsize_slider = document.querySelector("#cellsize_slider");
+        let cellsize_slider_value = document.querySelector("#cellsize_slider_value");
+        cellsize_slider_value.textContent = cellsize_slider.value;
+        cellsize_slider.addEventListener("input", (event) => {
+            cellsize_slider_value.textContent = cellsize_slider.value;
+            if (isGameRunning()) {
+                restartGame();
+            }
+        }, false); 
+        
+        // Manage framerate
+        let framerate_slider = document.querySelector("#framerate_slider");
+        let framerate_slider_value = document.querySelector("#framerate_slider_value");
+        framerate_slider_value.textContent = framerate_slider.value;
+        framerate_slider.addEventListener("input", (event) => {
+            framerate_slider_value.textContent = framerate_slider.value;
+            if (isGameRunning()) {
+                restartGame();
+            }
+        }, false); 
+        
+        function isGameRunning() {
+            return (game && game.isRunning());
+        }
+        
+        function stopGame() {
+            if(isGameRunning()) {
+                game.stop();
+                game = undefined;
+            }
+        }
+        
+        function startGame() {
+            if(!isGameRunning()) {
+                game = new Game(canvassize_slider.value, canvassize_slider.value, { 
+                    cellSize: cellsize_slider.value, 
+                    canvas: canvas
+                });
+                game.start(framerate_slider.value);
+            }
+        }
+        
+        function restartGame() {
+            stopGame();
+            startGame();
+        }
+        
+        startGame();
     </script>
+    </body>
 </html>

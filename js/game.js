@@ -2,12 +2,13 @@ import {Cell} from "./cell.js"
 
 export class Game {
     
-    constructor(width, height, cellSize=10) {
-        let canvas = this._createCanvas(width, height);
-        this.ctx = canvas.getContext("2d");
-        this.cellSize = cellSize;
+    constructor(width, height, options={cellSize:10, canvas:undefined}) {
+        let gameCanvas = this._initCanvas(width, height, options.canvas);
+        this.ctx = gameCanvas.getContext("2d");
+        this.cellSize = options.cellSize;
         this.curGen = this._createInitialGeneration(width, height, this.cellSize);
         this.nextGen = _.cloneDeep(this.curGen);
+        this.runnerId = undefined; // Holds the interval ID to be able to stop the animation
     }
     
     start(framerate=10) {
@@ -15,17 +16,29 @@ export class Game {
             console.warn("Framerate is limited to 60 fps.");
             framerate = 60;
         }
-        setInterval(this._draw.bind(this), Math.floor(1000/framerate));
+        this.runnerId = setInterval(this._draw.bind(this), Math.floor(1000/framerate));
     }
     
-    _createCanvas(width, height) {
+    stop() {
+        clearInterval(this.runnerId);
+        this.runnerId = undefined;
+    }
+    
+    isRunning() {
+        return (this.runnerId !== undefined);
+    }
+    
+    _initCanvas(width, height, canvas) {
         let body = document.querySelector("body");
-        let canvas = document.createElement("canvas");
-        canvas.setAttribute("id", "game_of_life");
-        canvas.setAttribute("width", width);
-        canvas.setAttribute("height", height);
-        body.appendChild(canvas);
-        return canvas;
+        let gameCanvas = canvas;
+        if (!gameCanvas) {
+            document.createElement("canvas");
+            canvas.setAttribute("id", "game_of_life");
+            body.appendChild(canvas);
+        }
+        gameCanvas.setAttribute("width", width);
+        gameCanvas.setAttribute("height", height);
+        return gameCanvas;
     }
     
     _createInitialGeneration(width, height, cellSize) {

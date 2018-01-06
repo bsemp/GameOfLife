@@ -1,0 +1,15 @@
+<html>
+    <title>Game of Life</title>
+    <head>
+        <style type="text/css">
+            @import url(gameoflife.css);
+        </style>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
+    </head>
+    <body></body>
+    <script type="module">
+        import {Game} from "./js/game.js";
+        let game = new Game(600, 600, 10);
+        game.start(10);
+    </script>
+</html>

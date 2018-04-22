@@ -1,2 +1,5 @@
 # Dependency directories
 node_modules/
+
+# NPM tmp file
+package-lock.json
